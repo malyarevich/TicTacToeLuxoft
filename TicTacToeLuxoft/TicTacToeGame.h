@@ -24,8 +24,6 @@ const std::array<char, 5> XOSymbols{
 	{'_', 'X', ' ', ' ', 'O'} 
 };
 
-enum Player { HUMAN, AI };
-
 struct Move {
 	int x;
 	int y;
@@ -46,7 +44,7 @@ private:
 	char mode;
 	int player1, player2;
 	std::string playerTitle1, playerTitle2;
-	std::array<std::array<int, 3>, 3> board;
+	int board[3][3];
 	Move last;
 
 	int checkToWin();
