@@ -1,59 +1,49 @@
 #pragma once
+#ifndef COM_LUXOFT_GAME_TICTACTOEGAME_H
+#define COM_LUXOFT_GAME_TICTACTOEGAME_H
 #include <vector>
-#include <array>
 #include <string>
 
-const std::vector<int> raysOfCells[3][3] = {
-	{ {0, 1, 2}, { 0,3 }, { 0,4,7 }, }, // _|_|_
-	{ {1, 5}, { 2,3,5,7 }, { 4,5 }, },	// _|_|_
-	{ {1, 6, 7}, { 3,6 }, { 2,4,6 }, }, // _|_|_
-};
-
-const int rays[][3][2] = {
-	{ {0, 0}, { 0,1 }, { 0,2 }, }, //0 -
-	{ {0, 0}, { 1,0 }, { 2,0 }, }, //1 |
-	{ {0, 0}, { 1,1 }, { 2,2 }, }, //2 /
-	{ {0, 1}, { 1,1 }, { 2,1 }, }, //3 |
-	{ {0, 2}, { 1,2 }, { 2,2 }, }, //4 |
-	{ {1, 0}, { 1,1 }, { 1,2 }, }, //5 -
-	{ {2, 0}, { 2,1 }, { 2,2 }, }, //6 -
-	{ {2, 0}, { 1,1 }, { 0,2 }, }, //7 /
-};
-
-const std::array<char, 5> XOSymbols{ 
-	{'_', 'X', ' ', ' ', 'O'} 
-};
-
 struct Move {
-	int x;
-	int y;
+    int x;
+    int y;
 };
 
 class TicTacToeGame
 {
 public:
-	TicTacToeGame(char inplayer1, char inmode, bool isP1First);
-	~TicTacToeGame();
-	static int convertPlayer(char player);
-	static int invertPlayer(char player);
-	void play();
-	void reset();
-private:
-	int turn, lastTurn;
-	bool isP1First, isP1Won;
-	char mode;
-	int player1, player2;
-	std::string playerTitle1, playerTitle2;
-	int board[3][3];
-	Move last;
+    TicTacToeGame(char player1, char mode, bool isPlayer1First);
+    ~TicTacToeGame();
+    void play();
+    void reset();
 
-	int checkToWin();
-	void printBoard();
-	bool gameOver();
-	int score();
-	Move minimax();
-	int maxSearch();
-	int minSearch();
-	void getHumanMove(int player);
+protected:
+    const static std::vector<int> RAYS_OF_CELLS[3][3];
+    const static int RAYS[8][3][2];
+    const static char X_O_SYMBOLS[5];
+
+private:
+    int turn_, lastTurn_;
+    bool isP1First_, isP1Won_;
+    char mode_;
+    int player1_, player2_;
+    std::string playerTitle1_, playerTitle2_;
+    int board_[3][3];
+    Move last_;
+
+    int convertPlayer(char player);
+    int invertPlayer(char player);
+
+    void askHumanMove(int player);
+    void printBoard();
+    int checkWin();
+    bool gameOver();
+
+    int evaluateScore();
+    Move minimax();
+    int maxSearch();
+    int minSearch();
+
 };
 
+#endif // COM_LUXOFT_GAME_TICTACTOEGAME_H

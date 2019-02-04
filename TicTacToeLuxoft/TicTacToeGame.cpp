@@ -6,287 +6,379 @@
 
 // '0' same the 'O' and '1' same the 'X'
 // '1' same the 'C' and '2' same the 'H'
-TicTacToeGame::TicTacToeGame(char inPlayer1, char inMode, bool inIsP1First)
-{
-	player1 = convertPlayer(inPlayer1);
-	player2 = invertPlayer(inPlayer1);
-	if (inMode == '1' || inMode == 'c') {
-		mode = '1';
-		playerTitle1 = "Human";
-		playerTitle2 = "AI";
-	} else {
-		mode = '2';
-		playerTitle1 = "Player 1";
-		playerTitle2 = "Player 2";
-	}
-	std::string playerTitle1, playerTitle2;
-	turn = 0;
-	isP1First = inIsP1First;
-	last = { 0, 0 };
+TicTacToeGame::TicTacToeGame(char player1, char mode, bool isPlayer1First) {
+    player1_ = convertPlayer(player1);
+    player2_ = invertPlayer(player1);
+    bool isVersusAi = mode == '1' || mode == 'c';
 
-	for (int i = 0; i < 3; i++) {
-		for (int j = 0; j < 3; j++) {
-			board[i][j] = 0;
-		}
-	}
+    if (isVersusAi) {
+        mode_ = '1';
+        playerTitle1_ = "Human";
+        playerTitle2_ = "AI";
+    } 
+    else {
+        mode_ = '2';
+        playerTitle1_ = "Player 1";
+        playerTitle2_ = "Player 2";
+    }
+
+    turn_ = 0;
+    isP1First_ = isPlayer1First;
+    last_ = { 0, 0 };
+
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            board_[i][j] = 0;
+        }
+    }
 }
 
+TicTacToeGame::~TicTacToeGame() {
 
-TicTacToeGame::~TicTacToeGame()
-{
 }
 
 //static '0' -> 4 or '1'(any) -> 1;
 int TicTacToeGame::convertPlayer(char player) {
-	if (player == '0') {
-		return 4;
-	}
-	return 1;
+    if (player == '0') {
+        return 4;
+    }
+
+    return 1;
 }
 
 //static '0' -> 1 or '1'(any) -> 4;
 int TicTacToeGame::invertPlayer(char player) {
-	if (player == '0') {
-		return 1;
-	}
-	return 4;
+    if (player == '0') {
+        return 1;
+    }
+
+    return 4;
 }
 
-int TicTacToeGame::checkToWin() {
-	for (int i : raysOfCells[last.x][last.y]) {
-		int sum = board[rays[i][0][0]][rays[i][0][1]]
-				+ board[rays[i][1][0]][rays[i][1][1]]
-				+ board[rays[i][2][0]][rays[i][2][1]];
-		if (sum == 3 || sum == 12) {
-			return sum;
-		}
-	}
-	return 0;
+//static
+
+const std::vector<int> TicTacToeGame::RAYS_OF_CELLS[3][3] = {
+    { { 0, 1, 2 }, { 0, 3 }, { 0, 4, 7 }, }, // _|_|_
+    { { 1, 5 }, { 2, 3, 5, 7 }, { 4, 5 }, }, // _|_|_
+    { { 1, 6, 7 }, { 3, 6 }, { 2, 4, 6 }, }, // _|_|_
+};
+
+//static
+const int TicTacToeGame::RAYS[8][3][2] = {
+    { {0, 0}, { 0,1 }, { 0,2 }, }, //0 -
+    { {0, 0}, { 1,0 }, { 2,0 }, }, //1 |
+    { {0, 0}, { 1,1 }, { 2,2 }, }, //2 /
+    { {0, 1}, { 1,1 }, { 2,1 }, }, //3 |
+    { {0, 2}, { 1,2 }, { 2,2 }, }, //4 |
+    { {1, 0}, { 1,1 }, { 1,2 }, }, //5 -
+    { {2, 0}, { 2,1 }, { 2,2 }, }, //6 -
+    { {2, 0}, { 1,1 }, { 0,2 }, }, //7 /
+};
+
+//static
+const char TicTacToeGame::X_O_SYMBOLS[5] = { '_', 'X', ' ', '_', 'O' };
+
+int TicTacToeGame::checkWin() {
+    for (int i : RAYS_OF_CELLS[last_.x][last_.y]) {
+        int sum = board_[RAYS[i][0][0]][RAYS[i][0][1]]
+                + board_[RAYS[i][1][0]][RAYS[i][1][1]]
+                + board_[RAYS[i][2][0]][RAYS[i][2][1]];
+        bool isWinSum = sum == 3 || sum == 12;
+
+        if (isWinSum) {
+            return sum;
+        }
+    }
+
+    return 0;
 }
 
 void TicTacToeGame::printBoard() {
-	for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 3; i++) {
+        if (i != 2) {
+            std::cout << "\n\t\t _";
+        } 
+        else {
+            std::cout << "\n\t\t  ";
+        }
+        for (int j = 0; j < 3; j++) {
+            std::string subline = "_|_";
 
-		if (i != 2) {
-			std::cout << "\n\t\t _";
-		} else {
-			std::cout << "\n\t\t  ";
-		}
-		for (int j = 0; j < 3; j++) {
-			std::string subline = "_|_";
-			if (j == 2) {
-				if (i == 2) {
-					subline = " ";
-				} else {
-					subline = "_";
-				}
-			} else if (i == 2) {
-				subline = " | ";
-			}
-			if (board[i][j] == 0 && i == 2) {
-				std::cout << " " << subline;
-			} else {
-				std::cout << XOSymbols.at(board[i][j]) << subline;
-			}
-		}
-	}
+            if (j == 2) {
+                if (i == 2) {
+                    subline = " ";
+                } 
+                else {
+                    subline = "_";
+                }
+            } 
+            else if (i == 2) {
+                subline = " | ";
+            }
+            bool isEmptyBottomCell = board_[i][j] == 0 && i == 2;
+
+            if (isEmptyBottomCell) {
+                std::cout << " " << subline;
+            } 
+            else {
+                std::cout << X_O_SYMBOLS[board_[i][j]] << subline;
+            }
+        }
+    }
 }
 bool TicTacToeGame::gameOver() {
-	if (turn > 4) {
-		if (checkToWin()) {
-			return true;
-		}
-	}	
-	if (turn < 9) {
-		return false;
-	}
-	return true;
+    if (turn_ > 4) {
+        if (checkWin()) {
+            return true;
+        }
+    }
+
+    if (turn_ < 9) {
+        return false;
+    }
+
+    return true;
 }
 
-int TicTacToeGame::score() {
-	int lineSum = checkToWin();	
-	if (lineSum == 3 * player1) {
-		return 10; /*Human win*/
-	} else if (lineSum == 3 * player2 ) {
-		return (turn - lastTurn == 1 ? - 1000 : -1) * 10; /*AI win*/	
-	}
-	return 0; /*Tie*/
+int TicTacToeGame::evaluateScore() {
+    int lineSum = checkWin();
+    bool isPlayer1Win = lineSum == 3 * player1_;
+    bool isPlayer2Win = lineSum == 3 * player2_;
+
+    if (isPlayer1Win) {
+        return 10; //Human win
+    } 
+    else if (isPlayer2Win) {
+        bool isNextMoveWinning = turn_ - lastTurn_ == 1;
+        return (isNextMoveWinning ? - 1000 : -1) * 10; //AI win
+    }
+
+    return 0; //Tie
 }
 
 Move TicTacToeGame::minimax() {
-	lastTurn = turn;
-	int bestMoveScore = 1000;
-	Move bestMove;
-	for (int i = 0; i < 3; i++) {
-		for (int j = 0; j < 3; j++) {
-			if (board[i][j] == 0) {
-				board[i][j] = player2;
-				last.x = i;
-				last.y = j;
-				turn++;
-				int tempMoveScore = maxSearch();
-				if (tempMoveScore <= bestMoveScore) {
-					bestMoveScore = tempMoveScore;
-					bestMove.x = i;
-					bestMove.y = j;
-				}
-				board[i][j] = 0;
-				turn--;
-			}
-		}
-	}
+    lastTurn_ = turn_;
+    int bestMoveScore = 1000;
+    Move bestMove;
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
 
-	return bestMove;
+            if (board_[i][j] == 0) {
+                board_[i][j] = player2_;
+                last_.x = i;
+                last_.y = j;
+                turn_++;
+                int tempMoveScore = maxSearch();
+
+                if (tempMoveScore <= bestMoveScore) {
+                    bestMoveScore = tempMoveScore;
+                    bestMove.x = i;
+                    bestMove.y = j;
+                }
+                board_[i][j] = 0;
+                turn_--;
+            }
+        }
+    }
+
+    return bestMove;
 }
 
 int TicTacToeGame::maxSearch() {
-	if (gameOver()) {
-		return score();
-	}
-	Move bestMove;
-	int bestMoveScore = -1000;
-	for (int i = 0; i < 3; i++) {
-		for (int j = 0; j < 3; j++) {
-			if (board[i][j] == 0) {
-				board[i][j] = player1;
-				last.x = i;
-				last.y = j;
-				turn++;
-				int tempMoveScore = minSearch();
-				if (tempMoveScore >= bestMoveScore) {
-					bestMoveScore = tempMoveScore;
-					bestMove.x = i;
-					bestMove.y = j;
-				}
-				board[i][j] = 0;
-				turn--;
-			}
-		}
-	}
+    bool isGameOver = turn_ > 4 && gameOver();
 
-	return bestMoveScore;
+    if (isGameOver) {
+        return evaluateScore();
+    }
+
+    Move bestMove;
+    int bestMoveScore = -1000;
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (board_[i][j] == 0) {
+                board_[i][j] = player1_;
+                last_.x = i;
+                last_.y = j;
+                turn_++;
+                int tempMoveScore = minSearch();
+
+                if (tempMoveScore >= bestMoveScore) {
+                    bestMoveScore = tempMoveScore;
+                    bestMove.x = i;
+                    bestMove.y = j;
+                }
+                board_[i][j] = 0;
+                turn_--;
+            }
+        }
+    }
+
+    return bestMoveScore;
 }
 int TicTacToeGame::minSearch() {
-	if (gameOver()) {
-		return score();
-	}
-	Move bestMove;
-	int bestMoveScore = 1000;
-	for (int i = 0; i < 3; i++) {
-		for (int j = 0; j < 3; j++) {
-			if (board[i][j] == 0) {
-				board[i][j] = player2;
-				last.x = i;
-				last.y = j;
-				turn++;
-				int tempMove = maxSearch();
-				if (tempMove <= bestMoveScore) {
-					bestMoveScore = tempMove;
-					bestMove.x = i;
-					bestMove.y = j;
-				}
-				board[i][j] = 0;
-				turn--;
-			}
-		}
-	}
+    bool isGameOver = turn_ > 4 && gameOver();
 
-	return bestMoveScore;
+    if (isGameOver) {
+        return evaluateScore();
+    }
+
+    Move bestMove;
+    int bestMoveScore = 1000;
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (board_[i][j] == 0) {
+                board_[i][j] = player2_;
+                last_.x = i;
+                last_.y = j;
+                turn_++;
+                int tempMove = maxSearch();
+
+                if (tempMove <= bestMoveScore) {
+                    bestMoveScore = tempMove;
+                    bestMove.x = i;
+                    bestMove.y = j;
+                }
+
+                board_[i][j] = 0;
+                turn_--;
+            }
+        }
+    }
+
+    return bestMoveScore;
 }
 
-void TicTacToeGame::getHumanMove(int player) {
-	int x = -INT_MAX, y = -INT_MAX;
-	while (x < 0 || x > 2 || y < 0 || y > 2 || board[x][y] != 0) {
-		if (x != -INT_MAX && y != -INT_MAX) {
-				std::cout << "\t   _____________________________" << std::endl;
-				std::cout << "\t   |        Incorrect:         |" << std::endl;
-				std::cout << "\t   |---------------------------|" << std::endl;
-			if (x < 0 || x > 2) {
-				std::cout << "\t   | * Row is not existing!    |" << std::endl;
-			}
-			if (y < 0 || y > 2) {
-				std::cout << "\t   | * Column is not existing! |" << std::endl;
-			}
-			if (!(x < 0 || x > 2) && !(y < 0 || y > 2) && board[x][y] != 0) {
-				std::cout << "\t   | * This cell is not empty! |" << std::endl;
-			}
-				std::cout << "\t   |---------------------------|" << std::endl;
-				std::cout << "\t   |     Please try again.     |" << std::endl;
-				std::cout << "\t   |___________________________|" << std::endl;
-		}
-		std::cout << "\tRow: "; //x
-		std::cin >> x;
-		if (!std::cin) {
-			std::cin.clear();
-			std::cin.ignore(200, '\n');
-		}
-		std::cout << "\tColumn: "; //y
-		std::cin >> y;
-		if (!std::cin) {
-			std::cin.clear();
-			std::cin.ignore(200, '\n');
-		}
-		x--;
-		y--;
-	}
-	board[x][y] = player;
-	last.x = x;
-	last.y = y;
+void TicTacToeGame::askHumanMove(int player) {
+    int x = -INT_MAX, y = -INT_MAX;
+    bool isMoveMakeSense;
+    bool isSkipAfterFirst = false;
+
+    do {
+        if (isSkipAfterFirst) {
+                std::cout << "\t   _____________________________\n";
+                std::cout << "\t   |        Incorrect:         |\n";
+                std::cout << "\t   |---------------------------|\n";
+
+            bool isRowMiss = x < 0 || x > 2;
+
+            if (isRowMiss) {
+                std::cout << "\t   | * Row is not existing!    |\n";
+            }
+
+            bool isColumnMiss = y < 0 || y > 2;
+
+            if (isColumnMiss) {
+                std::cout << "\t   | * Column is not existing! |\n";
+            }
+
+            bool isCellOccupied = !isRowMiss && !isColumnMiss &&
+                                  (board_[x][y] != 0);
+
+            if (isCellOccupied) {
+                std::cout << "\t   | * This cell is not empty! |\n";
+            }
+                std::cout << "\t   |---------------------------|\n";
+                std::cout << "\t   |     Please try again.     |\n";
+                std::cout << "\t   |___________________________|" << std::endl;
+        } 
+        else {
+            isSkipAfterFirst = true;
+        }
+        std::cout << "\tRow: "; //x
+        std::cin >> x;
+
+        if (!std::cin) {
+            std::cin.clear();
+            std::cin.ignore(200, '\n');
+        }
+
+        std::cout << "\tColumn: "; //y
+        std::cin >> y;
+
+        if (!std::cin) {
+            std::cin.clear();
+            std::cin.ignore(200, '\n');
+        }
+
+        x--;
+        y--; 
+        isMoveMakeSense = x < 0 || x > 2 || y < 0 || y > 2 ||
+                          board_[x][y] != 0;
+    } while (isMoveMakeSense);
+
+    board_[x][y] = player;
+    last_.x = x;
+    last_.y = y;
 }
 
 void TicTacToeGame::play() {
-	time_t seconds1, seconds2;
-	std::string curMove;
-	std::cout << "\n\t\tGood luck, have fun!" << std::endl;
-	printBoard();
-	std::cout << "\n  ( Enter your move, e.g. Row: 1, Column: 3. )" << std::endl;
-	int lineSum = 0;
-	while (turn < 5 || !gameOver()) {
-		seconds1 = time(0);
-		std::cout << "\n-------------------------------------------------" << std::endl;
-		if (turn % 2 == (0 + !isP1First)) {
-			curMove = playerTitle1;
-			std::cout << "\t\t @ " << curMove << " Move " << std::endl;
-			getHumanMove(player1);
-		}
-		else {
-			curMove = playerTitle2; 
-			std::cout << "\t\t @ " << curMove << " Move " << std::endl;
-			if (mode == '1') {
-				//Move AImove = (turn == 0) ? Move({ 1, 1 }) : minimax();
-				Move AImove = minimax(); //Save 1 second
-				board[AImove.x][AImove.y] = player2;
-				last = AImove;
+    std::string curMove;
+    std::cout << "\n\t\tGood luck, have fun!" << std::endl;
+    printBoard();
+    std::cout << "\n  ( Enter your move, e.g. Row: 1, Column: 3. )" << 
+                 std::endl;
+    time_t seconds1;
+    int lineSum;
+    bool isGameContinue = turn_ < 5 || !gameOver();
 
-				std::cout << "\tRow: " << (last.x + 1) << "\n\tColumn: " << (last.y + 1) << std::endl;
-			} else {
-				getHumanMove(player2);
-			}
-		}
-		seconds2 = time(0);
-		printBoard();
-		std::cout << "\t" << curMove << " time: " << (seconds2 - seconds1) << "s." << std::endl;
-		lineSum = checkToWin();
-		turn++;
-	}
-	std::cout << "\n-------------------------------------------------" << std::endl;
-	if (lineSum == 3 || lineSum == 12) {
-		std::cout << "\n\t    `*~=. " << curMove << " Wins .=~*`" << std::endl;
-		isP1Won = curMove == playerTitle1;
-	} else if (turn == 9) {
-		std::cout << "\n\t\t   `~. Tie .~`" << std::endl;
-	}
-	std::cout << "\n=================================================" << std::endl;
+    while (isGameContinue) {
+        seconds1 = time(0);
+        std::cout << "\n-------------------------------------------------" <<
+                     std::endl;
+        bool isTurnPlayer1 = turn_ % 2 == (0 + !isP1First_);
+
+        if (isTurnPlayer1) {
+            curMove = playerTitle1_;
+            std::cout << "\t\t @ " << curMove << " Move " << std::endl;
+            askHumanMove(player1_);
+        }
+        else {
+            curMove = playerTitle2_;
+            std::cout << "\t\t @ " << curMove << " Move " << std::endl;
+
+            if (mode_ == '1') {
+                Move AImove = minimax();
+                board_[AImove.x][AImove.y] = player2_;
+                last_ = AImove;
+
+                std::cout << "\tRow: " << (last_.x + 1) << "\n\tColumn: " <<
+                             (last_.y + 1) << std::endl;
+            } 
+            else {
+                askHumanMove(player2_);
+            }
+        }
+
+        printBoard();
+        std::cout << "\t" << curMove << " time: " << (time(0) - seconds1) << 
+                     "s." << std::endl;
+        lineSum = checkWin();
+        turn_++;
+        isGameContinue = turn_ < 5 || !gameOver();
+    }
+    std::cout << "\n-------------------------------------------------" <<
+                 std::endl;
+    bool isGameWin = lineSum == 3 || lineSum == 12;
+
+    if (isGameWin) {
+        std::cout << "\n\t    `*~=. " << curMove << " Wins .=~*`" << std::endl;
+        isP1Won_ = curMove == playerTitle1_;
+    } 
+    else if (turn_ == 9) {
+        std::cout << "\n\t\t   `~. Tie .~`" << std::endl;
+    }
+
+    std::cout << "\n=================================================" <<
+                 std::endl;
 
 }
-void TicTacToeGame::reset() { 
-	turn = 0;
-	isP1First = isP1Won;
-	last = { 0, 0 };
-
-	for (int i = 0; i < 3; i++) {
-		for (int j = 0; j < 3; j++) {
-			board[i][j] = 0;
-		}
-	}
+void TicTacToeGame::reset() {
+    turn_ = 0;
+    isP1First_ = isP1Won_;
+    last_ = { 0, 0 };
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            board_[i][j] = 0;
+        }
+    }
 }
