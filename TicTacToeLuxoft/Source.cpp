@@ -24,7 +24,7 @@ void chooseMode(char &mode) {
 		std::cout << "\tDo you want to play versus (C)omputer or (H)uman?" 
 			<< "\n\t\t(C)omputer - 1 or (H)uman - 2" << std::endl;
 		std::cout << "\n\t\t\t\t";
-		std::cin >> inp[0];
+		std::getline(std::cin, inp);
 		inp = easyToLower(inp[0]);
 	}
 	if (inp[0] == '1' || inp[0] == 'C') {
@@ -87,7 +87,8 @@ void showChoose(char &player1, bool &isP1First) {
 bool choosePlay(TicTacToeGame &Game) {
 	std::string inp = " ";
 	while (inp[0] != 'y' && inp[0] != 'n' && inp[0] != '1' && inp[0] != '0') {
-		std::cout << "\n\t\t\tPlay Again?" << "\n\t\t\t(Y)es - 1" << "\n\t\t\t(N)o - 0\n";
+		std::cout << "\n\t\t  Play Again?" << "\n\t\t   (Y)es - 1" << "\n\t\t    (N)o - 0\n";
+		std::cout << "\n\t\t\t";
 		std::cin >> inp;
 		inp = easyToLower(inp[0]);
 	}

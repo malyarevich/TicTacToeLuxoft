@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include <iostream>
 #include <algorithm>
 #include "TicTacToeGame.h"
@@ -195,23 +195,37 @@ int TicTacToeGame::minSearch() {
 }
 
 void TicTacToeGame::getHumanMove(int player) {
-	int x = -1, y = -1;
+	int x = -INT_MAX, y = -INT_MAX;
 	while (x < 0 || x > 2 || y < 0 || y > 2 || board[x][y] != 0) {
-		if (x != -1 && y != -1) {
-			std::cout << "\t = Incorrect, try again please. =" << std::endl;
+		if (x != -INT_MAX && y != -INT_MAX) {
+				std::cout << "\t   _____________________________" << std::endl;
+				std::cout << "\t   |        Incorrect:         |" << std::endl;
+				std::cout << "\t   |---------------------------|" << std::endl;
 			if (x < 0 || x > 2) {
-				std::cout << "\t ( Row is not existing! )" << std::endl;
+				std::cout << "\t   | * Row is not existing!    |" << std::endl;
 			}
 			if (y < 0 || y > 2) {
-				std::cout << "\t ( Column is not existing! )" << std::endl;
-			} else if (board[x][y] != 0) {
-				std::cout << "\t ( This cell is not empty! )" << std::endl;
+				std::cout << "\t   | * Column is not existing! |" << std::endl;
 			}
+			if (!(x < 0 || x > 2) && !(y < 0 || y > 2) && board[x][y] != 0) {
+				std::cout << "\t   | * This cell is not empty! |" << std::endl;
+			}
+				std::cout << "\t   |---------------------------|" << std::endl;
+				std::cout << "\t   |     Please try again.     |" << std::endl;
+				std::cout << "\t   |___________________________|" << std::endl;
 		}
 		std::cout << "\tRow: "; //x
 		std::cin >> x;
+		if (!std::cin) {
+			std::cin.clear();
+			std::cin.ignore(200, '\n');
+		}
 		std::cout << "\tColumn: "; //y
 		std::cin >> y;
+		if (!std::cin) {
+			std::cin.clear();
+			std::cin.ignore(200, '\n');
+		}
 		x--;
 		y--;
 	}
@@ -229,14 +243,15 @@ void TicTacToeGame::play() {
 	int lineSum = 0;
 	while (turn < 5 || !gameOver()) {
 		seconds1 = time(0);
+		std::cout << "\n-------------------------------------------------" << std::endl;
 		if (turn % 2 == (0 + !isP1First)) {
 			curMove = playerTitle1;
-			std::cout << "\n\t" << curMove << " Move:" << std::endl;
+			std::cout << "\t\t @ " << curMove << " Move " << std::endl;
 			getHumanMove(player1);
 		}
 		else {
 			curMove = playerTitle2; 
-			std::cout << "\n\t" << curMove << " Move:" << std::endl;
+			std::cout << "\t\t @ " << curMove << " Move " << std::endl;
 			if (mode == '1') {
 				//Move AImove = (turn == 0) ? Move({ 1, 1 }) : minimax();
 				Move AImove = minimax(); //Save 1 second
@@ -252,15 +267,16 @@ void TicTacToeGame::play() {
 		printBoard();
 		std::cout << "\t" << curMove << " time: " << (seconds2 - seconds1) << "s." << std::endl;
 		lineSum = checkToWin();
-		if (lineSum == 3 || lineSum == 12) {
-			std::cout << "\n\t\t~~ " << curMove << " Wins ~~" << std::endl;
-			isP1Won = curMove == playerTitle1;
-		}
 		turn++;
 	}
-	if (turn == 9 && lineSum != 3 && lineSum != 12) {
-		std::cout << "\n\t\t\t~~ Tie... ~~" << std::endl;
+	std::cout << "\n-------------------------------------------------" << std::endl;
+	if (lineSum == 3 || lineSum == 12) {
+		std::cout << "\n\t    `*~=. " << curMove << " Wins .=~*`" << std::endl;
+		isP1Won = curMove == playerTitle1;
+	} else if (turn == 9) {
+		std::cout << "\n\t\t   `~. Tie .~`" << std::endl;
 	}
+	std::cout << "\n=================================================" << std::endl;
 
 }
 void TicTacToeGame::reset() { 
