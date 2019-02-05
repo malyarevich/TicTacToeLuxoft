@@ -16,14 +16,14 @@ char easyToLower(char in) {
 
 void chooseMode(char &mode) {
     std::string in;
+    std::cout << "\n\n\t\t\tHello there :)" <<
+                 "\n\t\tLet us start playing Tic-Tac-Toe!";
     bool isInputMakeSense;
 
     do {
-        system("CLS");
-        std::cout << "\n\n\t\t\tHello there :)" <<
-                     "\n\t\tLet us start playing Tic-Tac-Toe!" <<
-                     "\n\tDo you want to play versus (C)omputer or (H)uman?" <<
-                     "\n\t\t(C)omputer - 1 or (H)uman - 2\n\n\t\t\t\t";
+        //system("CLS");        
+        std::cout << "\n\tDo you want to play versus (C)omputer or (H)uman?" <<
+                     "\n\t\t\t(C)omputer - 1 \n\t\t\t(H)uman - 2 \n\n\t\t\t";
         std::getline(std::cin, in);
         in = easyToLower(in[0]);
         isInputMakeSense = in[0] != 'c' && in[0] != 'h' && in[0] != '1' &&
@@ -45,9 +45,9 @@ void chooseXo(char &player1) {
     bool isInputMakeSense;
     
     do {
-        system("CLS");
+        //system("CLS");
         std::cout << "\n\n\t\tChoose your symbol:" <<
-                     "\n\t\t(O) - 0 or (X) - 1 \n\n\t\t\t";
+                     "\n\t\t\t(O) - 0 \n\t\t\t(X)- 1 \n\n\t\t\t";
         std::getline(std::cin, in);
         in = easyToLower(in[0]);
         isInputMakeSense = in[0] != 'x' && in[0] != 'o' && in[0] != '0' &&
@@ -69,7 +69,7 @@ bool chooseStep() {
     bool isInputMakeSense;
     
     do {
-        system("CLS");
+        //system("CLS");
         std::cout << "\n\n\t\tWill Player 1 go first?" <<
                      "\n\t\t\t(Y)es - 1 \n\t\t\t(N)o - 0 \n\n\t\t\t";
         std::getline(std::cin, in);
@@ -97,7 +97,7 @@ char showToXO(char in) {
 }
 
 void showChoose(char &player1, bool &isP1First) {
-    system("CLS");
+    //system("CLS");
     std::cout << "\n\n\tNice, Player 1 chose - " << showToXO(player1) << 
                  "\n\tAnd Player 1 will go " <<
                  (isP1First ? "first.\n" : "second.\n");
@@ -119,7 +119,8 @@ bool choosePlayAgain() {
     bool isPlayAgain = in[0] == 'y' || in[0] == '1';
 
     if (isPlayAgain) {
-        system("CLS");
+        //system("CLS");
+        std::cout << "\n#################################################\n";
         return true;
     }
 

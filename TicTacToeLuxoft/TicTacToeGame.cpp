@@ -2,7 +2,7 @@
 #include <iostream>
 #include <algorithm>
 #include "TicTacToeGame.h"
-#include <CTime>
+//#include <CTime>
 
 // '0' same the 'O' and '1' same the 'X'
 // '1' same the 'C' and '2' same the 'H'
@@ -191,7 +191,6 @@ int TicTacToeGame::maxSearch() {
         return evaluateScore();
     }
 
-    Move bestMove;
     int bestMoveScore = -1000;
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
@@ -204,8 +203,6 @@ int TicTacToeGame::maxSearch() {
 
                 if (tempMoveScore >= bestMoveScore) {
                     bestMoveScore = tempMoveScore;
-                    bestMove.x = i;
-                    bestMove.y = j;
                 }
                 board_[i][j] = 0;
                 turn_--;
@@ -222,7 +219,6 @@ int TicTacToeGame::minSearch() {
         return evaluateScore();
     }
 
-    Move bestMove;
     int bestMoveScore = 1000;
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
@@ -235,8 +231,6 @@ int TicTacToeGame::minSearch() {
 
                 if (tempMove <= bestMoveScore) {
                     bestMoveScore = tempMove;
-                    bestMove.x = i;
-                    bestMove.y = j;
                 }
 
                 board_[i][j] = 0;
@@ -249,7 +243,8 @@ int TicTacToeGame::minSearch() {
 }
 
 void TicTacToeGame::askHumanMove(int player) {
-    int x = -INT_MAX, y = -INT_MAX;
+    int x = -INT8_MAX,
+        y = -INT8_MAX;
     bool isMoveMakeSense;
     bool isSkipAfterFirst = false;
 
@@ -317,15 +312,16 @@ void TicTacToeGame::play() {
     printBoard();
     std::cout << "\n  ( Enter your move, e.g. Row: 1, Column: 3. )" << 
                  std::endl;
-    time_t seconds1;
+    //time_t seconds1;
     int lineSum;
     bool isGameContinue = turn_ < 5 || !gameOver();
 
     while (isGameContinue) {
-        seconds1 = time(0);
+        //seconds1 = time(0);
         std::cout << "\n-------------------------------------------------" <<
                      std::endl;
-        bool isTurnPlayer1 = turn_ % 2 == (0 + !isP1First_);
+            
+        bool isTurnPlayer1 = turn_ % 2 == (isP1First_ ? 0 : 1);
 
         if (isTurnPlayer1) {
             curMove = playerTitle1_;
@@ -350,8 +346,8 @@ void TicTacToeGame::play() {
         }
 
         printBoard();
-        std::cout << "\t" << curMove << " time: " << (time(0) - seconds1) << 
-                     "s." << std::endl;
+        //std::cout << "\t" << curMove << " time: " << (time(0) - seconds1) << 
+        //             "s." << std::endl;
         lineSum = checkWin();
         turn_++;
         isGameContinue = turn_ < 5 || !gameOver();
